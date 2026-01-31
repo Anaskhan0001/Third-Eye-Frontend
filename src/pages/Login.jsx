@@ -36,9 +36,16 @@ const Login = () => {
       const response = isAdmin
         ? await authAPI.adminLogin(payload)
         : await authAPI.login(payload);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      navigate(isAdmin ? '/admin' : '/');
+      if (isAdmin) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.admin));
+        navigate('/admin');
+      } else {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        navigate('/');
+      }
+
     } catch (error) {
       setMessage({
         type: 'danger',
