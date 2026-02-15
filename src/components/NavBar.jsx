@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
 const NavBar = () => {
   const [expanded, setExpanded] = useState(false);
+  const navRef = useRef(null);
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem('user') || 'null');
@@ -12,14 +13,34 @@ const NavBar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setExpanded(false); // close menu
+    setExpanded(false);
     navigate('/');
   };
 
   const closeMenu = () => setExpanded(false);
 
+  // 🔥 Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        expanded &&
+        navRef.current &&
+        !navRef.current.contains(event.target)
+      ) {
+        setExpanded(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [expanded]);
+
   return (
     <Navbar
+      ref={navRef}
       bg="dark"
       expand="lg"
       sticky="top"
@@ -39,30 +60,19 @@ const NavBar = () => {
             alt="Third Eye Infotech Logo"
             height="40"
             className="me-2"
-            style={{ maxWidth: '100%', height: 'auto' }}
           />
           Third Eye Infotech
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle />
 
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse>
           <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/" onClick={closeMenu}>
-              Home
-            </Nav.Link>
-            <Nav.Link as={Link} to="/services" onClick={closeMenu}>
-              Services
-            </Nav.Link>
-            <Nav.Link as={Link} to="/about" onClick={closeMenu}>
-              About Us
-            </Nav.Link>
-            <Nav.Link as={Link} to="/booking" onClick={closeMenu}>
-              Book Service
-            </Nav.Link>
-            <Nav.Link as={Link} to="/contact" onClick={closeMenu}>
-              Contact
-            </Nav.Link>
+            <Nav.Link as={Link} to="/" onClick={closeMenu}>Home</Nav.Link>
+            <Nav.Link as={Link} to="/services" onClick={closeMenu}>Services</Nav.Link>
+            <Nav.Link as={Link} to="/about" onClick={closeMenu}>About Us</Nav.Link>
+            <Nav.Link as={Link} to="/booking" onClick={closeMenu}>Book Service</Nav.Link>
+            <Nav.Link as={Link} to="/contact" onClick={closeMenu}>Contact</Nav.Link>
 
             {token && (
               <>
