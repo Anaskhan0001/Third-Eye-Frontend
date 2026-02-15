@@ -10,14 +10,23 @@ const NavBar = () => {
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   const token = localStorage.getItem('token');
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setExpanded(false);
-    navigate('/');
-  };
+  // 🔥 Close on scroll
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
 
-  const closeMenu = () => setExpanded(false);
+    const handleScroll = () => {
+      if (expanded && Math.abs(window.scrollY - lastScrollY) > 10) {
+        setExpanded(false);
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [expanded]);
 
   // 🔥 Close when clicking outside
   useEffect(() => {
@@ -37,6 +46,15 @@ const NavBar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [expanded]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setExpanded(false);
+    navigate('/');
+  };
+
+  const closeMenu = () => setExpanded(false);
 
   return (
     <Navbar
