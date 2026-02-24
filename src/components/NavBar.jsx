@@ -7,7 +7,17 @@ const NavBar = () => {
   const navRef = useRef(null);
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  let user = null;
+
+  try {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && storedUser !== "undefined") {
+      user = JSON.parse(storedUser);
+    }
+  } catch (error) {
+    console.log("Invalid user in storage");
+    localStorage.removeItem("user");
+  }
   const token = localStorage.getItem('token');
 
   // 🔥 Close on scroll
