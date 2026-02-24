@@ -20,6 +20,14 @@ const NavBar = () => {
   }
   const token = localStorage.getItem('token');
 
+  useEffect(() => {
+    if (token && !user) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigate("/login");
+    }
+  }, []);
+
   // 🔥 Close on scroll
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -102,7 +110,7 @@ const NavBar = () => {
             <Nav.Link as={Link} to="/booking" onClick={closeMenu}>Book Service</Nav.Link>
             <Nav.Link as={Link} to="/contact" onClick={closeMenu}>Contact</Nav.Link>
 
-            {token && (
+            {token && user && (
               <>
                 <Nav.Link as={Link} to="/my-appointments" onClick={closeMenu}>
                   Your Appointments
@@ -124,7 +132,7 @@ const NavBar = () => {
               </Nav.Link>
             )}
 
-            {!token ? (
+            {!token || !user ? (
               <Nav.Link as={Link} to="/login" onClick={closeMenu}>
                 Login
               </Nav.Link>
